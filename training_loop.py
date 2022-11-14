@@ -2,6 +2,7 @@
 Training loop for the Coma framework on Switch2-v0 the ma_gym
 """
 
+import torch
 import gym
 import ma_gym
 import matplotlib.pyplot as plt
@@ -16,6 +17,7 @@ def moving_average(x, N):
 
 if __name__ == "__main__":
     # Hyperparameters
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     agent_num = 2
 
     state_dim = 2
@@ -29,7 +31,7 @@ if __name__ == "__main__":
 
     # agent initialisation
 
-    agents = COMA(agent_num, state_dim, action_dim, lr_c, lr_a, gamma, target_update_steps)
+    agents = COMA(agent_num, state_dim, action_dim, lr_c, lr_a, gamma, target_update_steps).to(device)
 
     env = gym.make("Switch2-v0")
 
@@ -43,6 +45,7 @@ if __name__ == "__main__":
     while episode < n_episodes:
         episode_reward = 0
         obs = env.reset()
+        obs = torch.tensor(obs).to(device)
 
         done_n = [False]
 
@@ -50,6 +53,7 @@ if __name__ == "__main__":
 
             actions = agents.get_actions(obs)
             next_obs, reward, done_n, _ = env.step(actions)
+            next_obs = torch.tensor(next_obs).to(device)
 
             agents.memory.reward.append(reward)
             for i in range(agent_num):

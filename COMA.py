@@ -67,8 +67,10 @@ class Critic(nn.Module):
         return self.fc3(x)
 
 
-class COMA:
+class COMA(nn.Module):
     def __init__(self, agent_num, state_dim, action_dim, lr_c, lr_a, gamma, target_update_steps):
+        super(COMA, self).__init__()
+
         self.agent_num = agent_num
         self.state_dim = state_dim
         self.action_dim = action_dim
