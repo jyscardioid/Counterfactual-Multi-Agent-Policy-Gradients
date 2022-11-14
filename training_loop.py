@@ -33,7 +33,6 @@ if __name__ == "__main__":
 
     env = gym.make("Switch2-v0")
 
-    episode_reward = 0
     episodes_reward = []
 
     # training loop
@@ -44,6 +43,7 @@ if __name__ == "__main__":
     done_n = [False]
 
     while episode < n_episodes:
+        episode_reward = 0
         obs = env.reset()
 
         while not all(done_n):
@@ -60,12 +60,10 @@ if __name__ == "__main__":
             obs = next_obs
 
         episodes_reward.append(episode_reward)
-        episode_reward = 0
 
         episode += 1
 
-        if episode % 10 == 0:
-            agents.train()
+        agents.train()
 
         if episode % 100 == 0:
-            print(f"episode: {episode}, average reward: {sum(episodes_reward[-100:]) / 100}")
+            print(f"episode: {episode}, average reward: {  np.mean(episodes_reward[-100:])  }")
