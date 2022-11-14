@@ -118,7 +118,7 @@ class COMA(nn.Module):
         for i in range(self.agent_num):
             # train actor
 
-            input_critic = self.build_input_critic(i, observations, actions)
+            input_critic = self.build_input_critic(i, observations, actions, device)
             Q_target = self.critic_target(input_critic).detach()
 
             action_taken = actions.type(torch.long)[:, i].reshape(-1, 1)
@@ -166,10 +166,10 @@ class COMA(nn.Module):
 
         self.memory.clear()
 
-    def build_input_critic(self, agent_id, observations, actions):
+    def build_input_critic(self, agent_id, observations, actions, device):
         batch_size = len(observations)
 
-        ids = (torch.ones(batch_size) * agent_id).view(-1, 1)
+        ids = (torch.ones(batch_size) * agent_id).view(-1, 1).to(device)
 
         observations = torch.cat(observations).view(batch_size, self.state_dim * self.agent_num)
         input_critic = torch.cat([observations.type(torch.float32), actions.type(torch.float32)], dim=-1)
