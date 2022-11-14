@@ -100,7 +100,7 @@ class COMA(nn.Module):
             action = Categorical(dist).sample()
 
             self.memory.pi[i].append(dist)
-            actions.append(action.item())
+            actions.append(action)
 
         self.memory.observations.append(observations)
         self.memory.actions.append(actions)
