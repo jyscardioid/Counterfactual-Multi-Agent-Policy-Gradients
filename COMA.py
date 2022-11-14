@@ -144,7 +144,7 @@ class COMA(nn.Module):
             Q_taken = torch.gather(Q, dim=1, index=action_taken).squeeze()
 
             # TD(0)
-            r = torch.zeros(len(reward[:, i]))
+            r = torch.zeros(len(reward[:, i])).to(device)
             for t in range(len(reward[:, i])):
                 if done[i][t]:
                     r[t] = reward[:, i][t]
