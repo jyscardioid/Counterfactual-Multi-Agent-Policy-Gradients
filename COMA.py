@@ -157,7 +157,7 @@ class COMA:
             critic_optimizer.step()
 
         if self.count == self.target_update_steps:
-            self.critic_target.load_state_dict(agents.critic.state_dict())
+            self.critic_target.load_state_dict(self.critic.state_dict())
             self.count = 0
         else:
             self.count += 1
