@@ -81,7 +81,7 @@ class COMA(nn.Module):
 
         self.memory = Memory(agent_num, action_dim)
 
-        self.actors = [Actor(state_dim, action_dim) for _ in range(agent_num)]
+        self.actors = nn.ModuleList([Actor(state_dim, action_dim) for _ in range(agent_num)])
         self.critic = Critic(agent_num, state_dim, action_dim)
 
         self.critic_target = Critic(agent_num, state_dim, action_dim)
