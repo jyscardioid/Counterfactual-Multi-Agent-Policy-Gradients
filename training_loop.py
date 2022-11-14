@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
         while not all(done_n):
 
-            actions = agents.get_actions(obs)
+            actions = torch.tensor(agents.get_actions(obs)).to(device)
             next_obs, reward, done_n, _ = env.step(actions)
             next_obs = torch.tensor(next_obs).to(device)
 

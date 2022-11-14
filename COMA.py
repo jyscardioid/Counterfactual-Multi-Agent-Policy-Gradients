@@ -93,8 +93,6 @@ class COMA(nn.Module):
         self.count = 0
 
     def get_actions(self, observations):
-        observations = torch.tensor(observations)
-
         actions = []
 
         for i in range(self.agent_num):
