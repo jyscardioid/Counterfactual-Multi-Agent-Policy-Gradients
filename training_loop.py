@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
         episode += 1
 
-        agents.train()
+        agents.train(device)
 
         if episode % 100 == 0:
             print(f"episode: {episode}, average reward: {  np.mean(episodes_reward[-100:])  }")

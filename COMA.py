@@ -5,8 +5,10 @@ import torch.nn.functional as F
 from torch.distributions import Categorical
 
 
-class Memory:
+class Memory(nn.Module):
     def __init__(self, agent_num, action_dim):
+        super(Memory, self).__init__()
+
         self.agent_num = agent_num
         self.action_dim = action_dim
 
@@ -16,7 +18,7 @@ class Memory:
         self.reward = []
         self.done = [[] for _ in range(agent_num)]
 
-    def get(self):
+    def get(self, device):
         actions = torch.tensor(self.actions)
         observations = self.observations
 
@@ -27,7 +29,7 @@ class Memory:
         reward = torch.tensor(self.reward)
         done = self.done
 
-        return actions, observations, pi, reward, done
+        return actions.to(device), observations, pi, reward, done
 
     def clear(self):
         self.actions = []
@@ -107,11 +109,11 @@ class COMA(nn.Module):
 
         return actions
 
-    def train(self):
+    def train(self, device):
         actor_optimizer = self.actors_optimizer
         critic_optimizer = self.critic_optimizer
 
-        actions, observations, pi, reward, done = self.memory.get()
+        actions, observations, pi, reward, done = self.memory.get(device)
 
         for i in range(self.agent_num):
             # train actor
