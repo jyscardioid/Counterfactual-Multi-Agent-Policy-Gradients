@@ -32,7 +32,6 @@ if __name__ == "__main__":
     agents = COMA(agent_num, state_dim, action_dim, lr_c, lr_a, gamma, target_update_steps)
 
     env = gym.make("Switch2-v0")
-    obs = env.reset()
 
     episode_reward = 0
     episodes_reward = []
@@ -42,28 +41,31 @@ if __name__ == "__main__":
     n_episodes = 10000
     episode = 0
 
+    done_n = [False]
+
     while episode < n_episodes:
-        actions = agents.get_actions(obs)
-        next_obs, reward, done_n, _ = env.step(actions)
+        obs = env.reset()
 
-        agents.memory.reward.append(reward)
-        for i in range(agent_num):
-            agents.memory.done[i].append(done_n[i])
+        while not all(done_n):
 
-        episode_reward += sum(reward)
+            actions = agents.get_actions(obs)
+            next_obs, reward, done_n, _ = env.step(actions)
 
-        obs = next_obs
+            agents.memory.reward.append(reward)
+            for i in range(agent_num):
+                agents.memory.done[i].append(done_n[i])
 
-        if all(done_n):
-            episodes_reward.append(episode_reward)
-            episode_reward = 0
+            episode_reward += sum(reward)
 
-            episode += 1
+            obs = next_obs
 
-            obs = env.reset()
+        episodes_reward.append(episode_reward)
+        episode_reward = 0
 
-            if episode % 10 == 0:
-                agents.train()
+        episode += 1
 
-            if episode % 100 == 0:
-                print(f"episode: {episode}, average reward: {sum(episodes_reward[-100:]) / 100}")
+        if episode % 10 == 0:
+            agents.train()
+
+        if episode % 100 == 0:
+            print(f"episode: {episode}, average reward: {sum(episodes_reward[-100:]) / 100}")
