@@ -40,11 +40,11 @@ if __name__ == "__main__":
     n_episodes = 10000
     episode = 0
 
-    done_n = [False]
-
     while episode < n_episodes:
         episode_reward = 0
         obs = env.reset()
+
+        done_n = [False]
 
         while not all(done_n):
 
