@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 video
+saved_models
 .DS_Store
 
 # C extensions

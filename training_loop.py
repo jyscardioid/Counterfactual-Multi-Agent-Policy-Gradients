@@ -14,13 +14,24 @@ from COMA import COMA
 def moving_average(x, N):
     return np.convolve(x, np.ones((N,)) / N, mode='valid')
 
+def euclidean(a, b):
+    return np.linalg.norm(np.array(a)-np.array(b))
+
+def modify_obs(obs, threshold = 100):
+    a = obs[0]
+    b = obs[1]
+    dist = euclidean(a, b)
+    if dist < threshold:
+        return([a + b, b + a])
+    else:
+        return([a + [0, 0], b + [0, 0]])
 
 if __name__ == "__main__":
     # Hyperparameters
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     agent_num = 2
 
-    state_dim = 2
+    state_dim = 4
     action_dim = 5
 
     gamma = 0.99
@@ -39,12 +50,13 @@ if __name__ == "__main__":
 
     # training loop
 
-    n_episodes = 10000
+    n_episodes = 100000
     episode = 0
 
     while episode < n_episodes:
         episode_reward = 0
         obs = env.reset()
+        obs = modify_obs(obs)
         obs = torch.tensor(obs).to(device)
 
         done_n = [False]
@@ -53,6 +65,7 @@ if __name__ == "__main__":
 
             actions = torch.tensor(agents.get_actions(obs)).to(device)
             next_obs, reward, done_n, _ = env.step(actions)
+            next_obs = modify_obs(next_obs)
             next_obs = torch.tensor(next_obs).to(device)
 
             agents.memory.reward.append(reward)
@@ -69,5 +82,9 @@ if __name__ == "__main__":
 
         agents.train(device)
 
+        avg_reward = np.mean(episodes_reward[-100:])
+        if avg_reward > 2:
+            torch.save(agents, "saved_models/coma.pth")
+            break
         if episode % 100 == 0:
-            print(f"episode: {episode}, average reward: {  np.mean(episodes_reward[-100:])  }")
+            print(f"episode: {episode}, average reward: {avg_reward}")
